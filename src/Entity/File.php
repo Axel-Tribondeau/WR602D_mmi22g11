@@ -17,10 +17,10 @@ class File
     private ?string $name = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'file')]
-    private ?User $userkey_id = null;
+    private ?User $userkeyId = null;
 
     public function getId(): ?int
     {
@@ -41,24 +41,24 @@ class File
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
     public function getUserkeyId(): ?User
     {
-        return $this->userkey_id;
+        return $this->userkeyId;
     }
 
-    public function setUserkeyId(?User $userkey_id): static
+    public function setUserkeyId(?User $userkeyId): static
     {
-        $this->userkey_id = $userkey_id;
+        $this->userkeyId = $userkeyId;
 
         return $this;
     }
