@@ -1,15 +1,20 @@
-{# templates/generate_pdf/index.html.twig #}
-
 {% extends 'base.html.twig' %}
 
 {% block title %}Générer un PDF{% endblock %}
 
 {% block body %}
-    <h1>Générer un PDF à partir d'une URL</h1>
+    <div class="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6 mt-10">
+        <h1 class="text-2xl font-semibold text-gray-800 mb-4 text-center">📄 Générer un PDF</h1>
 
-    {{ form_start(form, { 'attr': { 'data-turbo': "false" } }) }}
-    {{ form_row(form.url) }}
-    {{ form_widget(form.submit) }}
-    {{ form_end(form) }}
-
+        <div class="space-y-4">
+            {{ form_start(form, { 'attr': { 'data-turbo': "false", 'class': 'space-y-4' } }) }}
+            <div>
+                {{ form_row(form.url, { 'attr': { 'class': 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none' } }) }}
+            </div>
+            <div class="text-center">
+                {{ form_widget(form.submit, { 'attr': { 'class': 'bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition' } }) }}
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
 {% endblock %}
