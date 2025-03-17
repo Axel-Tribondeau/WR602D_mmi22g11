@@ -24,13 +24,22 @@ final class SubscriptionController extends AbstractController
                 'name' => 'Abonnement Standard',
                 'price' => '9.99€',
                 'limit' => '10 PDF par jour',
-                'features' => ['Accès à la plateforme', '10 PDF par jour', 'Support client standard'],
+                'features' => [
+                    'Accès à la plateforme',
+                    '10 PDF par jour',
+                    'Support client standard'
+                ],
             ],
             [
                 'name' => 'Abonnement Premium',
                 'price' => '19.99€',
                 'limit' => 'PDF illimités',
-                'features' => ['Accès à la plateforme', 'PDF illimités par jour', 'Support client prioritaire', 'Sans publicités'],
+                'features' => [
+                    'Accès à la plateforme',
+                    'PDF illimités par jour',
+                    'Support client prioritaire',
+                    'Sans publicités'
+                ],
             ],
         ];
 
