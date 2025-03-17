@@ -20,20 +20,18 @@ class GotenbergController extends AbstractController
     #[Route('/convert-url-to-pdf', name: 'convert_url_to_pdf')]
     public function convertUrlToPdf(Request $request): Response
     {
-        $url = $request->query->get('url'); // Récupération de l'URL depuis la requête GET
+        $url = $request->query->get('url');
 
         if (!$url) {
             return new Response('URL manquante.', Response::HTTP_BAD_REQUEST);
         }
 
         try {
-            // Génération du PDF
             $pdfContent = $this->gotenbergService->convertUrlToPdf($url);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        // Retourner le PDF en réponse HTTP
         return new Response($pdfContent, Response::HTTP_OK, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="converted.pdf"',
@@ -51,7 +49,7 @@ class GotenbergController extends AbstractController
     <title>Document PDF</title>
   </head>
   <body>
-    <h1>Test dimanche 09/03/2025.</h1>
+    <h1>Test PDF généré.</h1>
   </body>
 </html>';
 
@@ -64,6 +62,27 @@ class GotenbergController extends AbstractController
         return new Response($pdfContent, Response::HTTP_OK, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="document.pdf"',
+        ]);
+    }
+
+    #[Route("/upload-file-to-pdf", name: "upload_file_to_pdf", methods: ["POST"])]
+    public function uploadFileToPdf(Request $request): Response
+    {
+        $file = $request->files->get('file');
+
+        if (!$file) {
+            return new Response('Aucun fichier envoyé.', Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $pdfContent = $this->gotenbergService->convertFileToPdf($file);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return new Response($pdfContent, Response::HTTP_OK, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="converted.pdf"',
         ]);
     }
 }
