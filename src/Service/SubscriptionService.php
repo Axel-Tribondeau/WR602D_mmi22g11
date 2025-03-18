@@ -30,4 +30,3 @@ class SubscriptionService
         return false;  // Si l'abonnement n'a pas été trouvé
     }
 }
-
