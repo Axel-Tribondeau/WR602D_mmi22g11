@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Entity\Subscription; // Assurez-vous que vous avez bien importé Subscription
 use App\Form\RegistrationFormType;
+use App\Service\SubscriptionService;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -20,11 +20,13 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    private EmailVerifier $emailVerifier;
+    private $emailVerifier;
+    private $subscriptionService;
 
-    public function __construct(EmailVerifier $emailVerifier)
+    public function __construct(EmailVerifier $emailVerifier, SubscriptionService $subscriptionService)
     {
         $this->emailVerifier = $emailVerifier;
+        $this->subscriptionService = $subscriptionService;
     }
 
     #[Route('/register', name: 'app_register')]
@@ -42,25 +44,23 @@ class RegistrationController extends AbstractController
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
 
-            // encode the plain password
+            // Encoder le mot de passe
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
-            // Assignation de l'abonnement gratuit
-            // Trouver l'abonnement gratuit, ici l'ID est fixé à 1 mais tu peux le changer si besoin
-            $subscription = $entityManager->getRepository(Subscription::class)->find(1); // Abonnement gratuit avec ID 1
+            // Assigner l'abonnement gratuit via le service
+            $subscriptionAssigned = $this->subscriptionService->assignFreeSubscription($user);
 
-            if ($subscription) {
-                $user->setSubscription($subscription); // Assigner l'abonnement à l'utilisateur
-            } else {
-                // Si l'abonnement n'existe pas dans la base de données
+            if (!$subscriptionAssigned) {
+                // Si l'abonnement n'a pas été trouvé, afficher un message d'erreur
                 $this->addFlash('error', 'L\'abonnement gratuit n\'a pas été trouvé.');
                 return $this->redirectToRoute('app_register');
             }
 
+            // Sauvegarder l'utilisateur
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Générer un email de confirmation et l'envoyer à l'utilisateur
+            // Générer un email de confirmation et l'envoyer
             $this->emailVerifier->sendEmailConfirmation(
                 'app_verify_email',
                 $user,
@@ -91,13 +91,10 @@ class RegistrationController extends AbstractController
             $this->emailVerifier->handleEmailConfirmation($request, $user);
         } catch (VerifyEmailExceptionInterface $exception) {
             $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
-
             return $this->redirectToRoute('app_register');
         }
 
-        // Afficher un message de succès et rediriger
         $this->addFlash('success', 'Votre adresse e-mail a été vérifiée.');
-
         return $this->redirectToRoute('app_register');
     }
 }
