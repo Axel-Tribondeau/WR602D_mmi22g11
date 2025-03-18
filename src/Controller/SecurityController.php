@@ -27,7 +27,6 @@ class SecurityController extends AbstractController
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
     {
-        // Cette méthode sera interceptée par la clé de configuration 'logout' dans ton fichier de configuration de sécurité.
         throw new \LogicException('This method is intercepted by the logout key on your firewall.');
     }
 }

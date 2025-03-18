@@ -85,7 +85,6 @@ class RegistrationController extends AbstractController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        // Valider le lien de confirmation de l'email, ce qui met à jour `User::isVerified=true` et persiste l'utilisateur
         try {
             /** @var User $user */
             $user = $this->getUser();
