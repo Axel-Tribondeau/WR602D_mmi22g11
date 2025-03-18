@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Subscription; // Assure-toi que Subscription est bien importé ici
 use App\Form\RegistrationFormType;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,40 +27,53 @@ class RegistrationController extends AbstractController
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
     {
+        // Créer un nouvel utilisateur
         $user = new User();
+        // Créer le formulaire d'inscription
         $form = $this->createForm(RegistrationFormType::class, $user);
+        // Traiter les données envoyées par le formulaire
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var string $plainPassword */
-            $plainPassword = $form
-                ->get('plainPassword')
-                ->getData();
+            $plainPassword = $form->get('plainPassword')->getData();
 
-            // encode the plain password
+            // Encoder le mot de passe
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
-            // Assign firstname and lastname manually
+            // Assigner prénom et nom à l'utilisateur
             $user->setFirstname($form->get('firstname')->getData());
             $user->setLastname($form->get('lastname')->getData());
 
+            // Trouver l'abonnement gratuit avec l'id = 1 et l'assigner à l'utilisateur
+            $subscription = $entityManager->getRepository(Subscription::class)->find(1); // L'ID de l'abonnement gratuit
+            if ($subscription) {
+                $user->setSubscription($subscription);
+            } else {
+                // Si l'abonnement n'existe pas, afficher un message d'erreur
+                $this->addFlash('error', 'L\'abonnement gratuit n\'a pas été trouvé.');
+                return $this->redirectToRoute('app_register');
+            }
+
+            // Sauvegarder l'utilisateur dans la base de données
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // generate a signed url and email it to the user
+            // Créer un email de confirmation
             $email = (new TemplatedEmail())
                 ->from(new Address('axeltribondeau@gmail.com', 'PDF Mail Bot'))
                 ->to((string) $user->getEmail())
                 ->subject('Please Confirm your Email')
                 ->htmlTemplate('registration/confirmation_email.html.twig');
 
+            // Envoyer l'email de confirmation
             $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user, $email);
 
-            // do anything else you need here, like send an email
-
+            // Connexion automatique de l'utilisateur après l'inscription
             return $security->login($user, 'form_login', 'main');
         }
 
+        // Si le formulaire n'est pas valide, ou s'il n'est pas soumis, on le rend à l'utilisateur
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form,
         ]);
@@ -70,7 +84,7 @@ class RegistrationController extends AbstractController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        // validate email confirmation link, sets User::isVerified=true and persists
+        // Valider le lien de confirmation de l'email, cela met à jour `User::isVerified=true` et persiste l'utilisateur
         try {
             /** @var User $user */
             $user = $this->getUser();
@@ -78,11 +92,12 @@ class RegistrationController extends AbstractController
         } catch (VerifyEmailExceptionInterface $exception) {
             $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
 
+            // En cas d'erreur, rediriger l'utilisateur vers la page d'inscription
             return $this->redirectToRoute('app_register');
         }
 
-        // @TODO Change the redirect on success and handle or remove the flash message in your templates
-        $this->addFlash('success', 'Your email address has been verified.');
+        // Afficher un message de succès et rediriger
+        $this->addFlash('success', 'Votre adresse e-mail a été vérifiée.');
 
         return $this->redirectToRoute('app_register');
     }
