@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Entity\Subscription;
+use App\Entity\Subscription; // Assurez-vous que vous avez bien importé Subscription
 use App\Form\RegistrationFormType;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,66 +20,61 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier)
+    private EmailVerifier $emailVerifier;
+
+    public function __construct(EmailVerifier $emailVerifier)
     {
+        $this->emailVerifier = $emailVerifier;
     }
 
     #[Route('/register', name: 'app_register')]
     public function register(
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
-        EntityManagerInterface $entityManager,
-        Security $security // Ajout du paramètre $security
+        Security $security,
+        EntityManagerInterface $entityManager
     ): Response {
-        // Créer un nouvel utilisateur
         $user = new User();
-
-        // Créer le formulaire d'inscription
         $form = $this->createForm(RegistrationFormType::class, $user);
-
-        // Traiter les données envoyées par le formulaire
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
 
-            // Encoder le mot de passe
+            // encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
-            // Assigner prénom et nom à l'utilisateur
-            $user->setFirstname($form->get('firstname')->getData());
-            $user->setLastname($form->get('lastname')->getData());
+            // Assignation de l'abonnement gratuit
+            // Trouver l'abonnement gratuit, ici l'ID est fixé à 1 mais tu peux le changer si besoin
+            $subscription = $entityManager->getRepository(Subscription::class)->find(1); // Abonnement gratuit avec ID 1
 
-            // Trouver l'abonnement gratuit avec l'id = 1 et l'assigner à l'utilisateur
-            $subscription = $entityManager->getRepository(Subscription::class)->find(1); // L'ID de l'abonnement gratuit
             if ($subscription) {
-                $user->setSubscription($subscription);
+                $user->setSubscription($subscription); // Assigner l'abonnement à l'utilisateur
             } else {
-                // Si l'abonnement n'existe pas, afficher un message d'erreur
+                // Si l'abonnement n'existe pas dans la base de données
                 $this->addFlash('error', 'L\'abonnement gratuit n\'a pas été trouvé.');
                 return $this->redirectToRoute('app_register');
             }
 
-            // Sauvegarder l'utilisateur dans la base de données
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Créer un email de confirmation
-            $email = (new TemplatedEmail())
-                ->from(new Address('axeltribondeau@gmail.com', 'PDF Mail Bot'))
-                ->to((string) $user->getEmail())
-                ->subject('Please Confirm your Email')
-                ->htmlTemplate('registration/confirmation_email.html.twig');
+            // Générer un email de confirmation et l'envoyer à l'utilisateur
+            $this->emailVerifier->sendEmailConfirmation(
+                'app_verify_email',
+                $user,
+                (new TemplatedEmail())
+                    ->from(new Address('axeltribondeau@gmail.com', 'Email Bot'))
+                    ->to((string) $user->getEmail())
+                    ->subject('Please Confirm your Email')
+                    ->htmlTemplate('registration/confirmation_email.html.twig')
+            );
 
-            // Envoyer l'email de confirmation
-            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user, $email);
-
-            // Connexion automatique de l'utilisateur après l'inscription
+            // Connexion automatique après l'inscription
             return $security->login($user, 'form_login', 'main');
         }
 
-        // Si le formulaire n'est pas valide, ou s'il n'est pas soumis, on le rend à l'utilisateur
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form,
         ]);
@@ -90,7 +85,7 @@ class RegistrationController extends AbstractController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        // Valider le lien de confirmation de l'email, cela met à jour `User::isVerified=true` et persiste l'utilisateur
+        // Valider le lien de confirmation de l'email, ce qui met à jour `User::isVerified=true` et persiste l'utilisateur
         try {
             /** @var User $user */
             $user = $this->getUser();
@@ -98,7 +93,6 @@ class RegistrationController extends AbstractController
         } catch (VerifyEmailExceptionInterface $exception) {
             $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
 
-            // En cas d'erreur, rediriger l'utilisateur vers la page d'inscription
             return $this->redirectToRoute('app_register');
         }
 

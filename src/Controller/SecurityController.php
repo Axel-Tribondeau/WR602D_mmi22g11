@@ -4,8 +4,8 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Routing\Annotation\Route; // Correction ici : l'importation de Route
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils; // Ajout de l'importation manquante
 
 class SecurityController extends AbstractController
 {
@@ -27,6 +27,7 @@ class SecurityController extends AbstractController
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
     {
+        // Cette méthode sera interceptée par la clé de configuration 'logout' dans ton fichier de configuration de sécurité.
         throw new \LogicException('This method is intercepted by the logout key on your firewall.');
     }
 }
