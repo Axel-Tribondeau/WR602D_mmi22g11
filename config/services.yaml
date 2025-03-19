@@ -31,3 +31,4 @@ services:
         arguments:
             $client: '@http_client'
             $gotenbergUrl: '%gotenberg_url%'
+
