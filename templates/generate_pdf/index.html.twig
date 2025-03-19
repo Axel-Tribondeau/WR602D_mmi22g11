@@ -6,15 +6,45 @@
     <div class="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6 mt-10">
         <h1 class="text-2xl font-semibold text-gray-800 mb-4 text-center">📄 Générer un PDF</h1>
 
-        <div class="space-y-4">
-            {{ form_start(form, { 'attr': { 'data-turbo': "false", 'class': 'space-y-4' } }) }}
-            <div>
-                {{ form_row(form.url, { 'attr': { 'class': 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none' } }) }}
+        <div class="space-y-6">
+            <!-- Formulaire pour l'URL -->
+            <div class="border p-4 rounded-lg">
+                <h2 class="text-lg font-semibold mb-2">Générer depuis une URL</h2>
+                {{ form_start(urlForm, { 'attr': { 'data-turbo': "false", 'class': 'space-y-4' } }) }}
+                <div>
+                    {{ form_row(urlForm.url, { 'attr': { 'class': 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none' } }) }}
+                </div>
+                <div class="text-center">
+                    {{ form_widget(urlForm.submit, { 'attr': { 'class': 'bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition' } }) }}
+                </div>
+                {{ form_end(urlForm) }}
             </div>
-            <div class="text-center">
-                {{ form_widget(form.submit, { 'attr': { 'class': 'bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition' } }) }}
+
+            <!-- Formulaire pour le contenu HTML -->
+            <div class="border p-4 rounded-lg">
+                <h2 class="text-lg font-semibold mb-2">Générer depuis du HTML</h2>
+                {{ form_start(htmlForm, { 'attr': { 'data-turbo': "false", 'class': 'space-y-4' } }) }}
+                <div>
+                    {{ form_row(htmlForm.html_content, { 'attr': { 'class': 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none' } }) }}
+                </div>
+                <div class="text-center">
+                    {{ form_widget(htmlForm.submit, { 'attr': { 'class': 'bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition' } }) }}
+                </div>
+                {{ form_end(htmlForm) }}
             </div>
-            {{ form_end(form) }}
+
+            <!-- Formulaire pour l'upload de fichier -->
+            <div class="border p-4 rounded-lg">
+                <h2 class="text-lg font-semibold mb-2">Générer depuis un fichier</h2>
+                {{ form_start(fileForm, { 'attr': { 'data-turbo': "false", 'class': 'space-y-4' } }) }}
+                <div>
+                    {{ form_row(fileForm.file, { 'attr': { 'class': 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none' } }) }}
+                </div>
+                <div class="text-center">
+                    {{ form_widget(fileForm.submit, { 'attr': { 'class': 'bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition' } }) }}
+                </div>
+                {{ form_end(fileForm) }}
+            </div>
         </div>
     </div>
 {% endblock %}

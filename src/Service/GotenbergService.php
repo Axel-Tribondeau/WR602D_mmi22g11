@@ -15,7 +15,6 @@ class GotenbergService
         $this->gotenbergUrl = $gotenbergUrl;
     }
 
-
     public function convertUrlToPdf(string $url): string
     {
         $response = $this->client->request('POST', $this->gotenbergUrl . 'forms/chromium/convert/url', [
@@ -29,7 +28,6 @@ class GotenbergService
 
         return $response->getContent(); // Retourner le contenu du PDF
     }
-
 
     public function convertHtmlToPdf(string $htmltopdfContent): string
     {
@@ -52,6 +50,24 @@ class GotenbergService
         // Supprimer le fichier temporaire après utilisation
         unlink($tempHtmlPath);
 
+        return $response->getContent();
+    }
+
+    public function convertWithLibreOffice(string $filePath): string
+    {
+        // Envoi d'une requête POST à l'API Gotenberg pour convertir le fichier avec LibreOffice
+        $response = $this->client->request('POST', $this->gotenbergUrl . 'forms/libreoffice/convert', [
+            'headers' => [
+                'Content-Type' => 'multipart/form-data',
+            ],
+            'body' => [
+                'files' => [
+                    'document' => fopen($filePath, 'r')  // Le fichier à convertir
+                ],
+            ],
+        ]);
+
+        // Retourner le contenu du PDF généré
         return $response->getContent();
     }
 }
