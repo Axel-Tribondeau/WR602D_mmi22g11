@@ -6,6 +6,7 @@ use App\Service\GotenbergService;
 use App\Entity\File;
 use App\Repository\FileRepository;
 use DateTimeImmutable;
+use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -75,24 +76,24 @@ class GeneratePdfController extends AbstractController
 
     private function checkUserQuota($user, FileRepository $fileRepository): bool
     {
-        $startOfDay = new \DateTime('today');
-        $endOfDay = new \DateTime('tomorrow');
+        $startOfDay = new DateTime('today');
+        $endOfDay = new DateTime('tomorrow');
+
+
         $pdfCount = $fileRepository->countPdfGeneratedByUserOnDate($user->getId(), $startOfDay, $endOfDay);
+
+
         $subscription = $user->getSubscription();
+        $maxPdf = $subscription->getMaxPdf();
 
-        $limits = [
-            'Gratuit' => 5,
-            'Moyen' => 20,
-            'Premium' => PHP_INT_MAX,
-        ];
-
-        if ($pdfCount >= ($limits[$subscription->getName()] ?? 5)) {
+        if ($pdfCount >= $maxPdf) {
             $this->addFlash('error', 'Vous avez atteint votre quota de PDF 😢. Découvrez nos autres formules !');
             return false;
         }
 
         return true;
     }
+
 
     private function createUrlForm()
     {
