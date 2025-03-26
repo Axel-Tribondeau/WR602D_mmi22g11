@@ -1,0 +1,34 @@
+name: Tests de qualitée de code
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  quality-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛎️ Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐘 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+          coverage: none
+
+      - name: 📦 Install dependencies
+        run: composer install --no-progress --prefer-dist
+
+      - name: 🔍 Run PHP_CodeSniffer
+        run: vendor/bin/phpcs --standard=PSR2 src/
+
+      - name: 🛠 Run PHPStan
+        run: vendor/bin/phpstan analyze src/
+
+      - name: 🧹 Run PHPMD
+        run: vendor/bin/phpmd src/ text cleancode,codesize,controversial,design

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+
+{% include 'components/header.html.twig' %}
+
+<main class="flex-grow container mx-auto py-10">
+    {% block body %}{% endblock %}
+</main>
+
+<footer class="bg-gray-800 text-white text-center py-4">
+    © 2025 - Pas d'idées de nom. Tous droits réservés.
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos Abonnements{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto p-6">
+        <h1 class="text-4xl font-bold text-center text-green-800 mb-8">Nos Abonnements</h1>
+
+        {% for flash_message in app.flashes('success') %}
+            <div id="flash-message" class="fixed top-5 right-5 bg-green-500 text-white p-4 rounded-lg shadow-lg transition-opacity duration-500 opacity-100">
+                {{ flash_message }}
+            </div>
+        {% endfor %}
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for subscription in subscriptions %}
+                <div class="bg-white shadow-lg rounded-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                    <div class="p-6">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-4">{{ subscription.name }}</h2>
+                        <p class="text-xl text-green-600 mb-4">{{ subscription.price }} € / mois</p>
+                        <p class="text-gray-700 mb-4">Limite : {{ subscription.maxPdf }}</p>
+
+                        <ul class="list-disc pl-5 space-y-2 mb-4">
+                            <li class="text-gray-700">{{ subscription.description }}</li>
+                        </ul>
+
+                        {% if app.user %}
+                            {% if app.user.subscription and app.user.subscription.id == subscription.id %}
+                                <button class="mt-4 py-2 px-6 bg-gray-400 text-white text-center rounded-lg cursor-not-allowed" disabled>
+                                    Abonnement Actuel
+                                </button>
+                            {% else %}
+                                <button onclick="showModal('{{ path('app_change_subscription', {'id': subscription.id}) }}')"
+                                        class="mt-4 py-2 px-6 bg-green-600 text-white text-center rounded-lg hover:bg-green-700 transition-colors duration-200 transform hover:scale-105">
+                                    Choisir cet abonnement
+                                </button>
+                            {% endif %}
+                        {% else %}
+                            <p class="text-red-600 mt-4">Veuillez vous connecter pour changer d'abonnement.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Modal de confirmation -->
+    <div id="confirmation-modal" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+            <h2 class="text-xl font-bold mb-4">Confirmation</h2>
+            <p>Voulez-vous vraiment changer votre abonnement ?</p>
+            <div class="mt-4">
+                <button id="confirm-btn" class="bg-green-600 text-white px-4 py-2 rounded-lg mr-2">Confirmer</button>
+                <button onclick="hideModal()" class="bg-gray-400 text-white px-4 py-2 rounded-lg">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showModal(url) {
+            const modal = document.getElementById('confirmation-modal');
+            modal.classList.remove('hidden');
+            document.getElementById('confirm-btn').onclick = function() {
+                window.location.href = url;
+            };
+        }
+
+        function hideModal() {
+            document.getElementById('confirmation-modal').classList.add('hidden');
+        }
+
+        // Masquer automatiquement le message flash après quelques secondes
+        setTimeout(() => {
+            const flashMessage = document.getElementById('flash-message');
+            if (flashMessage) {
+                flashMessage.style.opacity = '0';
+                setTimeout(() => { flashMessage.style.display = 'none'; }, 500);
+            }
+        }, 3000);
+    </script>
+{% endblock %}
