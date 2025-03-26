@@ -3,11 +3,10 @@
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
-    <div class="min-h-screen flex items-center justify-center bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
         <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
             <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Se connecter</h1>
 
-            <!-- Affichage des erreurs -->
             {% if error %}
                 <div class="mb-4 text-red-500 text-center">
                     {{ error.messageKey|trans(error.messageData, 'security') }}
@@ -16,38 +15,47 @@
 
             {% if app.user %}
                 <div class="mb-4 text-green-500 text-center">
-                    Vous êtes connecté en tant que {{ app.user.userIdentifier }}. <a href="{{ path('app_logout') }}" class="underline text-red-500">Se déconnecter</a>
+                    Vous êtes connecté en tant que {{ app.user.userIdentifier }}.
+                    <a href="{{ path('app_logout') }}" class="underline text-red-500">Se déconnecter</a>
                 </div>
             {% endif %}
 
-            <!-- Formulaire de connexion -->
             <form method="post" class="space-y-6">
-                <!-- Email -->
                 <div>
                     <label for="username" class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" name="_username" id="username" value="{{ last_username }}" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" autocomplete="email" required autofocus>
+                    <input type="email" name="_username" id="username" value="{{ last_username }}"
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                           autocomplete="email" required autofocus>
                 </div>
 
-                <!-- Mot de passe -->
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700">Mot de passe</label>
-                    <input type="password" name="_password" id="password" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" autocomplete="current-password" required>
+                    <input type="password" name="_password" id="password"
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                           autocomplete="current-password" required>
                 </div>
 
-                <!-- CSRF Token -->
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-                <!-- Bouton de connexion -->
                 <div>
                     <button type="submit" class="w-full py-2 px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
                         Se connecter
                     </button>
                 </div>
-                <a href="{{ path('app_forgot_password') }}">Mot de passe oublié ?</a>
+
+                <div class="text-center">
+                    <a href="{{ path('app_forgot_password') }}">
+                        <button type="button" class="mt-4 w-full py-2 px-4 bg-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-400 transition">
+                            🔑 Mot de passe oublié ?
+                        </button>
+                    </a>
+                </div>
             </form>
 
             <div class="mt-6 text-center text-sm text-gray-600">
-                <p>Pas encore de compte ? <a href="{{ path('app_register') }}" class="text-blue-600 hover:underline">S'inscrire</a></p>
+                <p>Pas encore de compte ?
+                    <a href="{{ path('app_register') }}" class="text-blue-600 hover:underline">S'inscrire</a>
+                </p>
             </div>
         </div>
     </div>
