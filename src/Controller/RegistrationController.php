@@ -49,7 +49,8 @@ class RegistrationController extends AbstractController
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
             // Trouver l'abonnement gratuit
-            $subscription = $entityManager->getRepository(Subscription::class)->find(1);
+            $subscription = $entityManager->getRepository(Subscription::class)->findOneByName('Gratuit');
+
 
             if (!$subscription) {
                 // Si l'abonnement n'existe pas, afficher un message et rediriger

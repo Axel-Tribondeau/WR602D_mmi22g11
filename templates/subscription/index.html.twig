@@ -30,8 +30,9 @@
                                     Abonnement Actuel
                                 </button>
                             {% else %}
-                                <button onclick="showModal('{{ path('app_change_subscription', {'id': subscription.id}) }}')"
-                                        class="mt-4 py-2 px-6 bg-green-600 text-white text-center rounded-lg hover:bg-green-700 transition-colors duration-200 transform hover:scale-105">
+                                <button onclick="showModal('{{ path('app_change_subscription', {'name': subscription.name}) }}')"
+
+                                class="mt-4 py-2 px-6 bg-green-600 text-white text-center rounded-lg hover:bg-green-700 transition-colors duration-200 transform hover:scale-105">
                                     Choisir cet abonnement
                                 </button>
                             {% endif %}
@@ -44,7 +45,6 @@
         </div>
     </div>
 
-    <!-- Modal de confirmation -->
     <div id="confirmation-modal" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg text-center">
             <h2 class="text-xl font-bold mb-4">Confirmation</h2>
