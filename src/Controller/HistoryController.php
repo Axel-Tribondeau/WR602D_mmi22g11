@@ -73,7 +73,6 @@ class HistoryController extends AbstractController
                 unlink($filePath);
             }
 
-
             $entityManager->remove($file);
         }
 
