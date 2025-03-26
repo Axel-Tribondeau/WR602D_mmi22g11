@@ -21,7 +21,6 @@ use Symfony\Component\Filesystem\Filesystem;
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-
 class GeneratePdfController extends AbstractController
 {
     private GotenbergService $pdfService;
@@ -45,12 +44,10 @@ class GeneratePdfController extends AbstractController
             return $this->redirectToRoute('app_subscriptions');
         }
 
-        // Création des formulaires
         $urlForm = $this->createUrlForm();
         $htmlForm = $this->createHtmlForm();
         $fileForm = $this->createFileForm();
 
-        // Gestion des soumissions
         $urlForm->handleRequest($request);
         $htmlForm->handleRequest($request);
         $fileForm->handleRequest($request);
@@ -79,9 +76,7 @@ class GeneratePdfController extends AbstractController
         $startOfDay = new DateTime('today');
         $endOfDay = new DateTime('tomorrow');
 
-
         $pdfCount = $fileRepository->countPdfGeneratedByUserOnDate($user->getId(), $startOfDay, $endOfDay);
-
 
         $subscription = $user->getSubscription();
         $maxPdf = $subscription->getMaxPdf();
@@ -93,7 +88,6 @@ class GeneratePdfController extends AbstractController
 
         return true;
     }
-
 
     private function createUrlForm()
     {
@@ -131,60 +125,79 @@ class GeneratePdfController extends AbstractController
     private function handleUrlForm(string $url, $user): Response
     {
         $pdfContent = $this->pdfService->convertUrlToPdf($url);
-        $this->saveFileRecord($user, $url);
+        $filePath = $this->savePdfFile($pdfContent);
 
-        return new Response($pdfContent, Response::HTTP_OK, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="generated.pdf"',
-        ]);
+        $this->saveFileRecord($user, $filePath);
+
+        return $this->createPdfResponse($pdfContent);
     }
 
     private function handleHtmlForm(string $htmlContent, $user): Response
     {
         $pdfContent = $this->pdfService->convertHtmlToPdf($htmlContent);
-        $this->saveFileRecord($user, $htmlContent);
+        $filePath = $this->savePdfFile($pdfContent);
 
-        return new Response($pdfContent, Response::HTTP_OK, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="generated.pdf"',
-        ]);
+        $this->saveFileRecord($user, $filePath);
+
+        return $this->createPdfResponse($pdfContent);
     }
 
     private function handleFileForm($file, $user): Response
     {
         $tempDir = $this->getParameter('kernel.project_dir') . '/public/temp/';
+        $publicDir = $this->getParameter('kernel.project_dir') . '/public/temp/';
         $filesystem = new Filesystem();
+
         if (!$filesystem->exists($tempDir)) {
             $filesystem->mkdir($tempDir);
         }
+        if (!$filesystem->exists($publicDir)) {
+            $filesystem->mkdir($publicDir);
+        }
 
-        $filePath = $tempDir . uniqid('uploaded_', true) . '.pdf';
-        $file->move($tempDir, $filePath);
+        $fileName = uniqid('uploaded_', true) . '.' . $file->getClientOriginalExtension();
+        $filePath = $tempDir . $fileName;
+        $file->move($tempDir, $fileName);
 
         $pdfContent = $this->pdfService->convertWithLibreOffice($filePath);
-        $filesystem->remove($filePath);
 
-        $this->saveFileRecord($user, $filePath);
+        $pdfFileName = uniqid('converted_', true) . '.pdf';
+        $pdfPath = $publicDir . $pdfFileName;
+        file_put_contents($pdfPath, $pdfContent);
 
+        $this->saveFileRecord($user, $pdfPath);
+
+        return $this->createPdfResponse($pdfContent);
+    }
+
+
+    private function savePdfFile(string $pdfContent): string
+    {
+        $tempDir = $this->getParameter('kernel.project_dir') . '/public/temp/';
+        $fileName = uniqid('pdf_', true) . '.pdf';
+        $filePath = $tempDir . $fileName;
+
+        file_put_contents($filePath, $pdfContent);
+
+        return $filePath;
+    }
+
+    private function createPdfResponse(string $pdfContent): Response
+    {
         return new Response($pdfContent, Response::HTTP_OK, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="generated.pdf"',
         ]);
     }
 
-    private function saveFileRecord($user, string $input): void
+    private function saveFileRecord($user, string $filePath): void
     {
         $file = new File();
-        $file->setName($this->generateFileName($input));
+        $file->setName(basename($filePath));
         $file->setUserkeyId($user);
         $file->setCreatedAt(new DateTimeImmutable());
 
         $this->entityManager->persist($file);
         $this->entityManager->flush();
-    }
-
-    private function generateFileName(string $input): string
-    {
-        return md5($input) . '.pdf';
     }
 }

@@ -3,16 +3,19 @@
 namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 class GotenbergService
 {
     private string $gotenbergUrl;
     private HttpClientInterface $client;
+    private Filesystem $filesystem;
 
-    public function __construct(HttpClientInterface $client, string $gotenbergUrl)
+    public function __construct(HttpClientInterface $client, string $gotenbergUrl, Filesystem $filesystem)
     {
         $this->client = $client;
         $this->gotenbergUrl = $gotenbergUrl;
+        $this->filesystem = $filesystem;
     }
 
     public function convertUrlToPdf(string $url): string
@@ -22,22 +25,19 @@ class GotenbergService
                 'Content-Type' => 'multipart/form-data',
             ],
             'body' => [
-                'url' => $url, // URL à convertir en PDF
+                'url' => $url,
             ],
         ]);
 
-        return $response->getContent(); // Retourner le contenu du PDF
+        return $response->getContent();
     }
 
     public function convertHtmlToPdf(string $htmltopdfContent): string
     {
-        // Définir un chemin temporaire pour stocker le fichier HTML
         $tempHtmlPath = '/var/www/html/WR602D_mmi22g11/public/index.html';
 
-        // Sauvegarder le HTML dans un fichier temporaire
         file_put_contents($tempHtmlPath, $htmltopdfContent);
 
-        // Envoyer la requête à Gotenberg
         $response = $this->client->request('POST', $this->gotenbergUrl . 'forms/chromium/convert/html', [
             'headers' => [
                 'Content-Type' => 'multipart/form-data',
@@ -47,7 +47,6 @@ class GotenbergService
             ],
         ]);
 
-        // Supprimer le fichier temporaire après utilisation
         unlink($tempHtmlPath);
 
         return $response->getContent();
@@ -55,19 +54,32 @@ class GotenbergService
 
     public function convertWithLibreOffice(string $filePath): string
     {
-        // Envoi d'une requête POST à l'API Gotenberg pour convertir le fichier avec LibreOffice
         $response = $this->client->request('POST', $this->gotenbergUrl . 'forms/libreoffice/convert', [
             'headers' => [
                 'Content-Type' => 'multipart/form-data',
             ],
             'body' => [
                 'files' => [
-                    'document' => fopen($filePath, 'r')  // Le fichier à convertir
+                    'document' => fopen($filePath, 'r')
                 ],
             ],
         ]);
 
-        // Retourner le contenu du PDF généré
+        $this->cleanTempDirectory($filePath);
+
         return $response->getContent();
+    }
+
+    private function cleanTempDirectory(string $filePath): void
+    {
+        $directory = dirname($filePath);
+
+        $files = glob($directory . '/*');
+
+        foreach ($files as $file) {
+            if (is_file($file) && pathinfo($file, PATHINFO_EXTENSION) !== 'pdf') {
+                $this->filesystem->remove($file);
+            }
+        }
     }
 }
