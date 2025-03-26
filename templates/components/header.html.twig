@@ -1,19 +1,40 @@
 <header class="bg-green-800 text-white p-4">
-    <div class="container mx-auto flex flex-wrap justify-between items-center">
+    <div class="container mx-auto flex justify-between items-center">
 
-        <!-- Titre -->
-        <h1 class="text-2xl font-bold">PDF converteur</h1>
+        <h1 class="text-2xl font-bold">A.T.P</h1>
 
-        <!-- Menu de navigation -->
-        <nav class="flex flex-wrap items-center space-x-6 mt-4 md:mt-0">
+        <button id="menu-toggle" class="md:hidden focus:outline-none">
+            <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+        </button>
+
+        <nav class="hidden md:flex items-center space-x-6">
             <a href="{{ path('app_home') }}" class="hover:underline {{ app.request.attributes.get('_route') == 'app_home' ? 'text-green-200' : '' }}">Accueil</a>
             <a href="{{ path('app_subscriptions') }}" class="hover:underline">Abonnement</a>
             <a href="{{ path('generate-pdf') }}" class="hover:underline">Générer des PDF</a>
 
             {% if app.user %}
                 <a href="{{ path('app_history') }}" class="hover:underline">Historique des PDF</a>
-                <a href="{{ path('app_logout') }}" class="text-white px-4 py-2 bg-red-500 rounded hover:bg-red-600 transition">Se déconnecter</a>
                 <a href="{{ path('app_profile') }}" class="hover:underline">Profil</a>
+                <a href="{{ path('app_logout') }}" class="text-white px-4 py-2 bg-red-500 rounded hover:bg-red-600 transition">Se déconnecter</a>
+            {% else %}
+                <a href="{{ path('app_register') }}" class="text-white px-4 py-2 bg-green-500 rounded hover:bg-green-600 transition">S'inscrire</a>
+                <a href="{{ path('app_login') }}" class="text-white px-4 py-2 bg-blue-500 rounded hover:bg-blue-600 transition">Se connecter</a>
+            {% endif %}
+        </nav>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden bg-green-700">
+        <nav class="flex flex-col items-center py-4 space-y-4">
+            <a href="{{ path('app_home') }}" class="hover:underline">Accueil</a>
+            <a href="{{ path('app_subscriptions') }}" class="hover:underline">Abonnement</a>
+            <a href="{{ path('generate-pdf') }}" class="hover:underline">Générer des PDF</a>
+
+            {% if app.user %}
+                <a href="{{ path('app_history') }}" class="hover:underline">Historique des PDF</a>
+                <a href="{{ path('app_profile') }}" class="hover:underline">Profil</a>
+                <a href="{{ path('app_logout') }}" class="text-white px-4 py-2 bg-red-500 rounded hover:bg-red-600 transition">Se déconnecter</a>
             {% else %}
                 <a href="{{ path('app_register') }}" class="text-white px-4 py-2 bg-green-500 rounded hover:bg-green-600 transition">S'inscrire</a>
                 <a href="{{ path('app_login') }}" class="text-white px-4 py-2 bg-blue-500 rounded hover:bg-blue-600 transition">Se connecter</a>
@@ -21,3 +42,14 @@
         </nav>
     </div>
 </header>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const menuToggle = document.getElementById("menu-toggle");
+        const mobileMenu = document.getElementById("mobile-menu");
+
+        menuToggle.addEventListener("click", function () {
+            mobileMenu.classList.toggle("hidden");
+        });
+    });
+</script>

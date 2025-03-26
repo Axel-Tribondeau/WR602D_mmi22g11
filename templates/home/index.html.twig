@@ -3,8 +3,49 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-    <div class="text-center">
-        <h2 class="text-3xl font-bold text-green-800">Bienvenue sur notre plateforme</h2>
-        <p class="mt-4 text-gray-700">Utilisez les options du menu pour naviguer.</p>
+    <!-- Section d'accueil -->
+    <div class="relative bg-green-800 text-white py-8">
+        <div class="container mx-auto text-center px-4">
+            <!-- Titre "Bonjour" -->
+            <h1 class="text-3xl md:text-4xl font-extrabold leading-tight py-4 px-8 rounded-full bg-white text-green-800 shadow-lg mx-auto">
+                Bonjour !
+            </h1>
+        </div>
+
+        <!-- Background -->
+        <div class="absolute inset-0 bg-opacity-25 bg-cover bg-center" style="background-image: url('https://source.unsplash.com/1600x900/?nature');"></div>
     </div>
+
+    <!-- Section d'informations -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto text-center px-4">
+            <h2 class="text-3xl font-bold text-green-800 mb-8">Informations sur la plateforme</h2>
+            <p class="text-lg text-gray-700">
+                Notre plateforme vous offre une gamme de services utiles et performants. Vous pouvez créer des PDF en un clic, gérer vos abonnements et consulter vos historiques de fichiers générés.
+            </p>
+        </div>
+    </section>
+
+    <!-- Section des fonctionnalités -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto text-center px-4">
+            <h2 class="text-3xl font-bold text-green-800 mb-8">Nos fonctionnalités principales</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="p-6 bg-gray-100 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold text-green-800 mb-4">Génération de PDF</h3>
+                    <p class="text-gray-600">Créez facilement des fichiers PDF à partir de vos informations et documents. Accédez à cette fonctionnalité pour générer des PDF rapidement.</p>
+                </div>
+
+                <div class="p-6 bg-gray-100 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold text-green-800 mb-4">Historique des PDFs</h3>
+                    <p class="text-gray-600">Consultez tous les fichiers PDF générés précédemment, stockés dans un historique pratique et accessible.</p>
+                </div>
+
+                <div class="p-6 bg-gray-100 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold text-green-800 mb-4">Gestion des abonnements</h3>
+                    <p class="text-gray-600">Suivez et gérez vos abonnements pour accéder à plus de fonctionnalités et obtenir un meilleur service.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}
