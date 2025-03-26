@@ -1,24 +1,20 @@
 <header class="bg-green-800 text-white p-4">
-    <div class="container mx-auto flex justify-between items-center">
-        <!-- Titre du site -->
-        <h1 class="text-2xl font-bold">Pas d'idée de nom</h1>
+    <div class="container mx-auto flex flex-wrap justify-between items-center">
+
+        <!-- Titre -->
+        <h1 class="text-2xl font-bold">PDF converteur</h1>
 
         <!-- Menu de navigation -->
-        <nav class="flex items-center space-x-6">
-            <a href="{{ path('app_home') }}" class="hover:text-green-200 transition {{ app.request.attributes.get('_route') == 'app_home' ? 'text-green-200' : '' }}">Accueil</a>
-
-            <!-- Lien vers "Abonnement" accessible à tous -->
+        <nav class="flex flex-wrap items-center space-x-6 mt-4 md:mt-0">
+            <a href="{{ path('app_home') }}" class="hover:underline {{ app.request.attributes.get('_route') == 'app_home' ? 'text-green-200' : '' }}">Accueil</a>
             <a href="{{ path('app_subscriptions') }}" class="hover:underline">Abonnement</a>
-
-            <!-- Lien vers "Générer des PDF" accessible à tous -->
             <a href="{{ path('generate-pdf') }}" class="hover:underline">Générer des PDF</a>
 
             {% if app.user %}
-                <!-- Si l'utilisateur est connecté, afficher le lien vers l'historique et le bouton de déconnexion -->
                 <a href="{{ path('app_history') }}" class="hover:underline">Historique des PDF</a>
                 <a href="{{ path('app_logout') }}" class="text-white px-4 py-2 bg-red-500 rounded hover:bg-red-600 transition">Se déconnecter</a>
+                <a href="{{ path('app_profile') }}" class="hover:underline">Profil</a>
             {% else %}
-                <!-- Si l'utilisateur n'est pas connecté, afficher les boutons d'inscription et de connexion -->
                 <a href="{{ path('app_register') }}" class="text-white px-4 py-2 bg-green-500 rounded hover:bg-green-600 transition">S'inscrire</a>
                 <a href="{{ path('app_login') }}" class="text-white px-4 py-2 bg-blue-500 rounded hover:bg-blue-600 transition">Se connecter</a>
             {% endif %}
