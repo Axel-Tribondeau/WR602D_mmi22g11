@@ -3,39 +3,44 @@
 {% block title %}Historique des PDFs{% endblock %}
 
 {% block body %}
-    <div class="max-w-4xl mx-auto mt-10 bg-white shadow-lg rounded-lg p-6">
-        <h1 class="text-2xl font-bold text-gray-800 mb-4">📜 Historique des PDFs</h1>
+    <div class="max-w-6xl mx-auto mt-10 bg-white shadow-lg rounded-lg p-6">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">📜 Historique des PDFs</h1>
 
-        <table class="w-full border-collapse border border-gray-300">
-            <thead>
-            <tr class="bg-gray-100 text-gray-700">
-                <th class="border border-gray-300 px-4 py-2 text-left">Nom du PDF</th>
-                <th class="border border-gray-300 px-4 py-2 text-left">Date de Génération</th>
-                <th class="border border-gray-300 px-4 py-2 text-center">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for file in files %}
-                <tr>
-                    <td class="border border-gray-300 px-4 py-2">{{ file.name }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ file.createdAt|date('d/m/Y H:i') }}</td>
-                    <td class="border border-gray-300 px-4 py-2 text-center">
-                        <a href="{{ path('download_pdf', {'fileName': file.name}) }}" class="bg-blue-500 text-white py-1 px-3 rounded">Télécharger</a>
-                    </td>
+        <!-- Table responsive -->
+        <div class="overflow-x-auto">
+            <table class="w-full border border-gray-300 shadow-md rounded-lg">
+                <thead>
+                <tr class="bg-green-700 text-white text-left">
+                    <th class="px-5 py-3">📄 PDF</th>
+                    <th class="px-5 py-3">📅 Date</th>
+                    <th class="px-5 py-3 text-center">⚙️ Actions</th>
                 </tr>
-            {% else %}
-                <tr>
-                    <td colspan="3" class="text-center py-4">Aucun PDF généré</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                {% for file in files %}
+                    <tr class="hover:bg-gray-100 transition">
+                        <td class="px-5 py-4">{{ file.name }}</td>
+                        <td class="px-5 py-4">{{ file.createdAt|date('d/m/Y H:i') }}</td>
+                        <td class="px-5 py-4 text-center">
+                            <a href="{{ path('download_pdf', {'fileName': file.name}) }}" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition shadow">
+                                📥 Télécharger
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center py-6 text-gray-500 text-lg">Aucun PDF généré 🫤</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-        <!-- Ajouter le bouton pour supprimer l'historique -->
-        <div class="mt-4 text-center">
-            <form action="{{ path('clear_history') }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer tous vos fichiers PDF ?')">
-                <button type="submit" class="bg-red-500 text-white py-2 px-4 rounded">
-                    Effacer l'historique
+        <!-- Bouton suppression historique -->
+        <div class="mt-8 flex justify-center">
+            <form action="{{ path('clear_history') }}" method="post" onsubmit="return confirm('⚠️ Es-tu sûr de vouloir supprimer tous tes PDFs ?')">
+                <button type="submit" class="bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition font-semibold shadow">
+                    🗑️ Supprimer l'historique
                 </button>
             </form>
         </div>
