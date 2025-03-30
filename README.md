@@ -25,10 +25,6 @@
 - **Limitation des PDF générés** : Les utilisateurs sont limités dans le nombre de PDF qu'ils peuvent générer en fonction de leur abonnement. Par exemple, un abonnement de base peut permettre la génération de 3 PDF par mois, tandis qu'un abonnement premium en permet 150.
 - **Gestion de l'usage** : L'application suit la quantité de PDF générés par chaque utilisateur et bloque la génération lorsque le quota mensuel est atteint.
 
-### **Recherche et Filtrage**
-
-- **Recherche dans l'historique** : Recherchez les PDF générés précédemment par date, titre ou type de fichier.
-
 ### **Authentification**
 
 - **Gestion de la session** : L'accès à l'application est sécurisé par l'authentification de l'utilisateur. Les utilisateurs doivent se connecter pour accéder aux fonctionnalités de gestion des PDF.
