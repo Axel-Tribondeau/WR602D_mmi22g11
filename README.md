@@ -93,7 +93,7 @@ Consultez l'historique des PDF générés et téléchargez à nouveau les fichie
 
 ### **Gestion des abonnements**
 
-Gérez votre abonnement pour savoir combien de PDFs vous pouvez générer ce mois-ci. Un suivi est effectué pour limiter le nombre de PDF générés en fonction de votre plan d'abonnement.
+Un suivi est effectué pour limiter le nombre de PDF générés en fonction de votre plan d'abonnement.
 
 ### **Mot de passe oublié et modification**
 
