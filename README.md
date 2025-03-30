@@ -143,7 +143,7 @@
 
 ### **Sélectionnez un abonnement**
 
-Une fois connecté, sélectionnez l'abonnement souhaité dans la section **Gestion des Abonnements**. Vous pourrez choisir entre plusieurs types d'abonnement (par exemple : "Medium", "Premium", etc.), chacun ayant un nombre de PDF que vous pouvez générer par mois.
+Une fois connecté, sélectionnez l'abonnement souhaité dans la section **Gestion des Abonnements**. Vous pourrez choisir entre plusieurs types d'abonnement (par exemple : "Medium", "Premium", etc.), chacun ayant un nombre de PDF que vous pouvez générer par jours.
 
 ### **Génération de PDF**
 
